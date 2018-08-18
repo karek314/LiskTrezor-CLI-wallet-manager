@@ -87,7 +87,7 @@ php ltcli.php vg817982j3nbhrau2i Vote 0 +473c354cdf627b82e9113e02a337486dd3afc56
 ```
 
 ### 2ndpass
-Adding second signature is as simple as, last parameter is account id. (Please note that right now Trezor firmware has mistake and you won't be able to send anything from account with 2ndpass, but once it's fixed it will work fine)
+Adding second signature - last parameter is account id. (Please note that right now Trezor firmware has mistake and you won't be able to send anything from account with 2ndpass, but once it's fixed it will work fine)
 ```sh
 php ltcli.php vg817982j3nbhrau2i 2ndpass 1
 ```
