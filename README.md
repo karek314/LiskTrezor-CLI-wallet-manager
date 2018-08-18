@@ -24,7 +24,7 @@ php ltcli.php
 Server loaded from config: http://77.55.220.191:7000
 
 LiskTrezor CLI Wallet
-First parm always trezor password, enter on host.
+First parameter always trezor password, enter on host.
 
 Usage
 ReadAccounts - with optional number to iterate, default=3

@@ -168,7 +168,7 @@ if ($method == "readaccounts") {
 die("\n\n");
 
 function help(){
-	die("\nLiskTrezor CLI Wallet\nFirst parm always trezor password, enter on host.\n\nUsage\nReadAccounts - with optional number to iterate, default=3\nSend - Sending LSK transfer transaction\nVote - vote using publicKeys\n2ndpass - register 2nd additional signature, private key as well derived form same device master seed\n\n");
+	die("\nLiskTrezor CLI Wallet\nFirst parameter always trezor password, enter on host.\n\nUsage\nReadAccounts - with optional number to iterate, default=3\nSend - Sending LSK transfer transaction\nVote - vote using publicKeys\n2ndpass - register 2nd additional signature, private key as well derived form same device master seed\n\n");
 }
 
 function IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk){
