@@ -97,7 +97,7 @@ m/44'/134'/0'/0'/0'
 m/44'/134'/0'/0'/1'
 m/44'/134'/0'/0'/2'
 ```
-etc... respectively second signature will be used from
+etc... respectively, second signature will be used from
 ```sh
 m/44'/134'/1'/0'/0'
 m/44'/134'/2'/0'/0'
