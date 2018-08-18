@@ -42,7 +42,7 @@ Listing more accounts (example 8)
 ```sh
 php ltcli.php YOUR_PASSWORD_ENTERED_ON_HOST ReadAccounts 8
 ```
-For each account address retrival you need to click "Host" on Trezor device.
+For each account address retrieval you need to click "Host" on Trezor device.
 
 ### Send
 ```sh
