@@ -80,7 +80,7 @@ if ($method == "readaccounts") {
 		$PublicKey = GetTrezorPublicKeyForAccount("m/44'/134'/0'/0'/".$fromAccount."'",$password);
 		echo "\nPublicKey: ".$PublicKey;
 		echo "\nPreparing and signing transaction";
-		$tx = CreateAndSignTransaction($password, $fromAccount, $PublicKey, $Recipient, $amount*LSK_BASE, $data, $type=SEND_TRANSACTION_FLAG, false, $doubleSign);
+		$tx = CreateAndSignTransaction($password, $fromAccount, $PublicKey, $Recipient, $amount*LSK_BASE, $data, $type=SEND_TRANSACTION_FLAG, $doubleSign);
 		echo "\nTransaciton ->";
 		print_r($tx);
 		echo "\nResponse from Lisk Core ->";
@@ -127,7 +127,7 @@ if ($method == "readaccounts") {
 		} else {
 			$doubleSign = false;
 		}
-		$tx = CreateAndSignTransaction($password, $fromAccount, $PublicKey, "", 0, false, $type=VOTE_TRANSACTION_FLAG, $doubleSign, $asset,$address);
+		$tx = CreateAndSignTransaction($password, $fromAccount, $PublicKey, "", 0, false, $type=VOTE_TRANSACTION_FLAG, $doubleSign, $asset, $address);
 		echo "\nTransaciton ->";
 		print_r($tx);
 		echo "\nResponse from Lisk Core ->";
