@@ -145,7 +145,7 @@ if ($method == "readaccounts") {
 		$PublicKey = GetTrezorPublicKeyForAccount("m/44'/134'/0'/0'/".$fromAccount."'",$password);
 		echo "\nPublicKey: ".$PublicKey;
 		echo "\nSecond signature will be added to Lisk account, using another privatekey from different account path. Mark double signing in any further transactions\nGetting second publicKey";
-		$secondPath = "m/44'/134'/1'/0'/".(string)$fromAccount."'";
+		$secondPath = "m/44'/134'/".(string)$fromAccount."'/0'/0'";
 		echo "\nDoubleSignPath:".$secondPath;
 		$SecondPublicKey = GetTrezorPublicKeyForAccount($secondPath,$password);
 		echo "\nSecondPublicKey: ".$SecondPublicKey;
@@ -277,7 +277,7 @@ function CreateAndSignTransaction($password, $sendFromAccId, $senderPK, $recipie
 	$transaction['signature'] = SignLiskTransactionWithTrezor($accountPath,$transactionString,$password);
 	if ($doubleSign) {
 		$transactionString = json_encode($transaction);
-		$secondPath = "m/44'/134'/1'/0'/".(string)$sendFromAccId."'";
+		$secondPath = "m/44'/134'/".(string)$fromAccount."'/0'/0'";
 		echo "\nDoubleSignPath:".$secondPath;
 		$SecondPublicKey = GetTrezorPublicKeyForAccount($secondPath,$password);
 		echo "\nPK: ".$SecondPublicKey;
