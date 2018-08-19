@@ -67,7 +67,7 @@ php ltcli.php YOUR_PASSWORD_ENTERED_ON_HOST Send 0 1.55 34672832L 2ndpass
 
 ### Vote
 ```sh
-php ltcli.php vg817982j3nbhrau2i Vote        
+php ltcli.php YOUR_PASSWORD_ENTERED_ON_HOST Vote        
 Server loaded from config: http://77.55.220.191:7000
 
 
@@ -79,17 +79,17 @@ Multiple votes (+publicKey-publicKey+publicKey and so on...)
 
 Sending vote transaction with one signature account
 ```sh
-php ltcli.php vg817982j3nbhrau2i Vote 0 +473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c
+php ltcli.php YOUR_PASSWORD_ENTERED_ON_HOST Vote 0 +473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c
 ```
 Double signed vote transaction (enabled 2nd pass)
 ```sh
-php ltcli.php vg817982j3nbhrau2i Vote 0 +473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c 2ndpass
+php ltcli.php YOUR_PASSWORD_ENTERED_ON_HOST Vote 0 +473c354cdf627b82e9113e02a337486dd3afc5615eb71ffd311c5a0beda37b8c 2ndpass
 ```
 
 ### 2ndpass
 Adding second signature - last parameter is account id. (Please note that right now Trezor firmware has mistake and you won't be able to send anything from account with 2ndpass, but once it's fixed it will work fine)
 ```sh
-php ltcli.php vg817982j3nbhrau2i 2ndpass 1
+php ltcli.php YOUR_PASSWORD_ENTERED_ON_HOST 2ndpass 1
 ```
 While normal accounts are retrieved with path
 ```sh

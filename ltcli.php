@@ -8,6 +8,7 @@ if (file_exists('bytebuffer/main.php')) {
 	require_once('bytebuffer/main.php');
 } else {
 	shell_exec("git clone https://github.com/karek314/bytebuffer");
+	require_once('bytebuffer/main.php');
 }
 require_once('BigInteger.php');
 const LISK_PHP_VER = 1.0;
