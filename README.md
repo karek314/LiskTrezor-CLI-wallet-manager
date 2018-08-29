@@ -92,15 +92,19 @@ Adding second signature - last parameter is account id. (Please note that right 
 php ltcli.php YOUR_PASSWORD_ENTERED_ON_HOST 2ndpass 1
 ```
 While normal accounts are retrieved with path
-```sh
-m/44'/134'/0'/0'/0'
-m/44'/134'/0'/0'/1'
-m/44'/134'/0'/0'/2'
+```
+m/44'/134'/n'
+
+m/44'/134'/0'
+m/44'/134'/1'
+m/44'/134'/2'
 ```
 etc... respectively, second signature will be used from
-```sh
-m/44'/134'/1'/0'/0'
-m/44'/134'/2'/0'/0'
-m/44'/134'/3'/0'/0'
+```
+m/44'/134'/n'/0'
+
+m/44'/134'/0'/0'
+m/44'/134'/1'/0'
+m/44'/134'/2'/0'
 ```
 It lifts security from 2^126 to 2^127 in case of Lisk. (ed25519)
