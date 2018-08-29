@@ -49,15 +49,17 @@ if(isset($argv[1]) && isset($argv[2])){
 	help();
 }
 if ($method == "readaccounts") {
+	$total = 0;
 	if (isset($argv[3])) {
 		if (is_numeric($argv[3])) {
-			IterateThroughAccounts($argv[3],$password,$server,$needPk);
+			$total = IterateThroughAccounts($argv[3],$password,$server,$needPk);
 		} else {
-			IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk);
+			$total = IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk);
 		}
 	} else {
-		IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk);
+		$total = IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk);
 	}
+	echo "\nTotal balance: ".$total." LSK";
 } else if ($method == "send") {
 	if(isset($argv[3]) && isset($argv[4]) && isset($argv[5])){
 		$fromAccount = $argv[3];
@@ -173,6 +175,7 @@ function help(){
 }
 
 function IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk){
+	$total_balance = 0;
 	for ($i=0; $i < $AccountsToIterate; $i++) {
 		$accountPath = "m/44'/134'/".$i."'";
 		$address = GetTrezorAddressForAccount($accountPath,$password);
@@ -182,6 +185,7 @@ function IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk){
 				if (isset($json['data'][0]['balance'])) {
 					$balance = $json['data'][0]['balance'];
 					$balance = $balance/LSK_BASE;
+					$total_balance += $balance;
 				} else {
 					$balance = 0;
 				}
@@ -198,6 +202,7 @@ function IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk){
 			echo "\n[Account ID: ".$i."] ".$accountPath."\nAddress:".$address."\nBalance:".$balance." LSK\n";
 		}
 	}
+	return $total_balance;
 }
 
 /////////////////////
