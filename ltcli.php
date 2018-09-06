@@ -59,7 +59,7 @@ if ($method == "readaccounts") {
 	} else {
 		$total = IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk);
 	}
-	echo "\nTotal balance: ".$total." LSK";
+	echo "\nTotal balance: ".ReadableNumber($total)." LSK";
 } else if ($method == "send") {
 	if(isset($argv[3]) && isset($argv[4]) && isset($argv[5])){
 		$fromAccount = $argv[3];
@@ -197,9 +197,9 @@ function IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk){
 		}
 		if ($needPk) {
 			$publicKey = GetTrezorPublicKeyForAccount($accountPath,$password);
-			echo "\n[Account ID: ".$i."] ".$accountPath."\nAddress:".$address."\nPublicKey:".$publicKey."\nBalance:".$balance." LSK\n";
+			echo "\n[Account ID: ".$i."] ".$accountPath."\nAddress:".$address."\nPublicKey:".$publicKey."\nBalance:".ReadableNumber($balance)." LSK\n";
 		} else {
-			echo "\n[Account ID: ".$i."] ".$accountPath."\nAddress:".$address."\nBalance:".$balance." LSK\n";
+			echo "\n[Account ID: ".$i."] ".$accountPath."\nAddress:".$address."\nBalance:".ReadableNumber($balance)." LSK\n";
 		}
 	}
 	return $total_balance;
@@ -517,6 +517,13 @@ function assignTransactionBuffer($transaction, $assetSize, $assetBytes, $options
 		$bytes = $transactionBuffer->readBytes($size);
 		$string = call_user_func_array("pack", array_merge(array("C*"), $bytes));
 		return $string;
+}
+
+function ReadableNumber($n,$decs=3,$decPoint = '.',$thousandsSep = ',') {
+    $decs ++;
+    $n = number_format($n, $decs, $decPoint, $thousandsSep);
+    $n = substr($n, 0, -1);
+    return $n;
 }
 
 ?>
