@@ -16,7 +16,7 @@ const LISK_START = 1464109200;
 const USER_AGENT = "LISK-PHP ".LISK_PHP_VER." via CURL (Linux, en-GB)";
 const NETWORK_HASH = "ed14889723f24ecc54871d058d98ce91ff2f973192075c0155ba2b7b70ad2511"; //mainnet
 const MINVERSION = ">=1.0.0";
-const OS = "lisk-php-api";
+const OS = "lisk-php: LiskTrezor-CLI-wallet-manager";
 const API_VERSION = "1.0.0";
 const SEND_TRANSACTION_ENDPOINT = "/api/transactions";
 const ACCOUNTS = "/api/accounts/";
@@ -36,17 +36,21 @@ const MULTISIG_TRANSACTION_FLAG = 4;
 const DAPP_TRANSACTION_FLAG = 5;
 const DAPP_IN_TRANSACTION_FLAG = 6;
 const DAPP_OUT_TRANSACTION_FLAG = 7;
-$config = json_decode(file_get_contents('config.json'),true);
-$server = $config['server'];
+$server = GetServer();
+$mode = GetMode();
 $needPk = false;
-echo "Server loaded from config: ".$server."\n";
+echo strtoupper($mode)." server loaded from config: ".$server."\n";
 
 $AccountsToIterate = 3;
 if(isset($argv[1]) && isset($argv[2])){
 	$password = $argv[1];
 	$method = strtolower($argv[2]);
 } else {
-	help();
+	if(isset($argv[1])) {
+		$method = strtolower($argv[1]);
+	} else {
+		help();
+	}
 }
 if ($method == "readaccounts") {
 	$total = 0;
@@ -59,7 +63,19 @@ if ($method == "readaccounts") {
 	} else {
 		$total = IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk);
 	}
+	if ($total > 0) {
+		$lisk_price_json = json_decode(file_get_contents('https://api.coinmarketcap.com/v2/ticker/1214/?convert=BTC'),true);
+		$lsk_usd = $lisk_price_json['data']['quotes']['USD']['price'];
+		$lsk_btc = $lisk_price_json['data']['quotes']['BTC']['price'];
+		$total_usd = $total*$lsk_usd;
+		$total_btc = $total*$lsk_btc;
+	} else {
+		$total_btc = 0;
+		$total_usd = 0;
+	}
 	echo "\nTotal balance: ".ReadableNumber($total)." LSK";
+	echo "\nTotal balance: ".ReadableNumber($total_usd)." USD";
+	echo "\nTotal balance: ".ReadableNumber($total_btc)." BTC";
 } else if ($method == "send") {
 	if(isset($argv[3]) && isset($argv[4]) && isset($argv[5])){
 		$fromAccount = $argv[3];
@@ -164,6 +180,9 @@ if ($method == "readaccounts") {
 	} else {
 		echo "\n\nParameters for sending\nAccountID";
 	}
+} else if ($method == "togglenetwork"){
+	echo "\n\nCurrent mode: ".ToggleMode();
+	echo "\nCurrent server: ".GetServer();
 } else {
 	help();
 }
@@ -171,7 +190,7 @@ if ($method == "readaccounts") {
 die("\n\n");
 
 function help(){
-	die("\nLiskTrezor CLI Wallet\nFirst parameter always trezor password, enter on host.\n\nUsage\nReadAccounts - with optional number to iterate, default=3\nSend - Sending LSK transfer transaction\nVote - vote using publicKeys\n2ndpass - register 2nd additional signature, private key as well derived form same device master seed\n\n");
+	die("\nLiskTrezor CLI Wallet\nFirst parameter always trezor password, enter on host.\n\nUsage\nReadAccounts - with optional number to iterate, default=3\nSend - Sending LSK transfer transaction\nVote - vote using publicKeys\n2ndpass - register 2nd additional signature, private key as well derived form same device master seed\ntogglenetwork - toggle between testnet and mainnet\n\n");
 }
 
 function IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk){
@@ -180,10 +199,12 @@ function IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk){
 		$accountPath = "m/44'/134'/".$i."'";
 		$address = GetTrezorAddressForAccount($accountPath,$password);
 		$json = AccountForAddress($address,$server);
+		$_2ndpass = "";
 		if (isset($json['data'])) {
 			if (isset($json['data'][0])) {
 				if (isset($json['data'][0]['balance'])) {
 					$balance = $json['data'][0]['balance'];
+					$_2ndpass = $json['data'][0]['secondPublicKey'];
 					$balance = $balance/LSK_BASE;
 					$total_balance += $balance;
 				} else {
@@ -195,11 +216,16 @@ function IterateThroughAccounts($AccountsToIterate,$password,$server,$needPk){
 		} else {
 			$balance = 0;
 		}
+		if (strlen($_2ndpass) > 1) {
+			$_2ndpass = "(2ndpass secured)";
+		} else {
+			$_2ndpass = "";
+		}
 		if ($needPk) {
 			$publicKey = GetTrezorPublicKeyForAccount($accountPath,$password);
-			echo "\n[Account ID: ".$i."] ".$accountPath."\nAddress:".$address."\nPublicKey:".$publicKey."\nBalance:".ReadableNumber($balance)." LSK\n";
+			echo "\n[Account ID: ".$i."] ".$accountPath."\nAddress:".$address."\nPublicKey:".$publicKey."\nBalance:".ReadableNumber($balance)." LSK"." ".$_2ndpass."\n";
 		} else {
-			echo "\n[Account ID: ".$i."] ".$accountPath."\nAddress:".$address."\nBalance:".ReadableNumber($balance)." LSK\n";
+			echo "\n[Account ID: ".$i."] ".$accountPath."\nAddress:".$address."\nBalance:".ReadableNumber($balance)." LSK"." ".$_2ndpass."\n";
 		}
 	}
 	return $total_balance;
@@ -330,18 +356,22 @@ function MainFunction($method,$url,$body=false,$jsonBody=true,$jsonResponse=true
 		  $headers = array('Content-Type: application/json','Content-Length: ' . strlen($body)); 
     }
   }
-  $port = parse_url($url)['port'];
-  if (!$port) {
-  	if (parse_url($url)['scheme']=='https') {
-		  $port="443";
-  	} else {
-  		$port="80";
-  	}
+  if (isset(parse_url($url)['port'])) {
+  	$port = parse_url($url)['port'];
+  	if (!$port) {
+	  	if (parse_url($url)['scheme']=='https') {
+			  $port="443";
+	  	} else {
+	  		$port="80";
+	  	}
+	}
   }
   array_push($headers, "minVersion: ".MINVERSION);
   array_push($headers, "os: ".OS);
   array_push($headers, "version: ".API_VERSION);
-  array_push($headers, "port: ".$port);
+  if (isset(parse_url($url)['port'])) {
+	array_push($headers, "port: ".$port);
+  }
   array_push($headers, "Accept-Language: en-GB");
   array_push($headers, "nethash: ".NETWORK_HASH);
   array_push($headers, "broadhash: ".NETWORK_HASH);
@@ -526,4 +556,31 @@ function ReadableNumber($n,$decs=3,$decPoint = '.',$thousandsSep = ',') {
     return $n;
 }
 
+function GetServer(){
+	$config = json_decode(file_get_contents('config.json'),true);
+	$mode = $config['current-mode'];
+	if ($mode == "mainnet") {
+		$server = $config['server-mainnet'];
+	} else {
+		$server = $config['server-testnet'];
+	}
+	return $server;
+}
+
+function GetMode(){
+	$config = json_decode(file_get_contents('config.json'),true);
+	$mode = $config['current-mode'];
+	return $mode;
+}
+
+function ToggleMode(){
+	$config = json_decode(file_get_contents('config.json'),true);
+	if ($config['current-mode'] == 'mainnet') {
+		$config['current-mode'] = 'testnet';
+	} else {
+		$config['current-mode'] = 'mainnet';
+	}
+	file_put_contents('config.json', json_encode($config));
+	return $config['current-mode'];
+}
 ?>

@@ -1,4 +1,1 @@
-{
-	"server": "http://77.55.220.191:7000",
-	"comment": "Above testnet server provided by lisk.chat user and Lisk community member @sexor"
-}
+{"server-mainnet":"https:\/\/node01.lisk.io","server-testnet":"https:\/\/testnet.lisk.io","current-mode":"mainnet"}

@@ -31,6 +31,7 @@ ReadAccounts - with optional number to iterate, default=3
 Send - Sending LSK transfer transaction
 Vote - vote using publicKeys
 2ndpass - register 2nd additional signature, private key as well derived form same device master seed
+togglenetwork - toggle between testnet and mainnet server configuration
 ```
 
 ### ReadAccounts
